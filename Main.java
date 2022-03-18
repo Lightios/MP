@@ -1,4 +1,3 @@
-package com.company;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -7,7 +6,7 @@ import java.util.Scanner;
 //==============================================
 
 class Wektor{
-    public int[] vec; // referencja do wektora
+    public int[] vector; // referencja do wektora
     public int maxSize; // maksymalna długość wektora
     public int currentSize; // aktualna długość wektora
 
@@ -15,18 +14,18 @@ class Wektor{
     public Wektor (int maxSize_) {
         maxSize = maxSize_;
         currentSize = 0;
-        vec = new int[maxSize];
+        vector = new int[maxSize];
     }
 
     //==================================== ustawienie wektora
     public void setVector(int[] vector) {
         if(maxSize < vector.length){
-            this.vec = vector;
+            this.vector = vector;
             // Nadpisuje wcześniejsze ustawienie maxSize.
             maxSize = vector.length;
         }
         else {
-            System.arraycopy(vector, 0, this.vec, 0, vector.length);
+            System.arraycopy(vector, 0, this.vector, 0, vector.length);
         }
         // Nadpisuje wcześniejsze ustawienie currentSize dla obu powyższych przypadków.
         currentSize = vector.length;
@@ -36,7 +35,7 @@ class Wektor{
     public void readVector(int nrOfIntegers, Scanner sc) {
         for (int i = 0; i < nrOfIntegers; ) {
             if (sc.hasNextInt()) {
-                vec[i] = sc.nextInt();
+                vector[i] = sc.nextInt();
                 ++i;
             } else {
                 // Zbiera to, co zostało wpisane i nie było typu int.
@@ -51,7 +50,7 @@ class Wektor{
         System.out.println ("Losowanie "+nrOfIntegers+" liczb z przedzialu [" +min+","+max+"]");
         for( int i=0; i<nrOfIntegers; i++)
             // max+1, żeby przedział był domknięty z góry.
-            vec[i] = new Random().nextInt(max+1-min)+min;
+            vector[i] = new Random().nextInt(max+1-min)+min;
     }
 
     //===================================== wyświetlanie wektora
@@ -59,7 +58,7 @@ class Wektor{
         System.out.println("Liczba elementow = " + currentSize);
         System.out.println("Zawartosc wektora ");
         for (int i = 0; i<currentSize; i++) {
-            System.out.print(vec[i]+", ");
+            System.out.print(vector[i]+", ");
             if((i+1)%10==0) System.out.println();
         }
         System.out.println();
@@ -76,58 +75,99 @@ class Wektor{
         System.out.println("Zawartość podwektora ");
         // i<=end mniejsze lub równe, ponieważ end jest indeksem.
         for (int i = begin; i<=end; i++) {
-            System.out.print(vec[i]+", ");
+            System.out.print(vector[i]+", ");
             if((i-begin+1)%10==0) System.out.println();
         }
         System.out.println();
     }
 
-    public void addAtEnd(int value)
-    {
-        if (currentSize < maxSize)
-        {
-            vec[currentSize] = value;
+    /** Dołącza określony element na końcu niecałkowicie wypełnionego wektora. */
+    public void addIfNotFull(int element) {
+        if(currentSize<maxSize){
+            vector[currentSize++] = element;
         }
-        else
-        {
-            maxSize += 1;
-            int[] vecTemp = new int[maxSize];
-            System.arraycopy(vec, 0, vecTemp, 0, vec.length);
-
-            this.vec = vecTemp;
+        else {
+            System.out.println("Wektor jest pełen. Przed dodaniem usuń jakiś element.");
         }
-
-        currentSize += 1;
     }
 
-    public void addAtEnd(int value, int percentOfIncrease)
-    {
-        // TODO: check if float
-//        System.out.print(value * (1 + percentOfIncrease));
-//        System.out.print(value * (1 + percentOfIncrease) * 1.0);
-//
-//        if (value * (1 + percentOfIncrease) == value * (1 + percentOfIncrease) * 1.0)
-//        {
-//            System.out.println("Inv");
-//        }
-        maxSize *= (1 + percentOfIncrease);
-
-        int[] vecTemp = new int[maxSize];
-        System.arraycopy(vec, 0, vecTemp, 0, vec.length);
-        this.vec = vecTemp;
-
-        addAtEnd(value);
+    /** addEvenWhenFull z domyślną wartością wyrażoną w procentach używaną do rozszerzenia tablicy. */
+    public void addEvenWhenFull(int element) {
+        addEvenWhenFull(element, 25);
     }
 
-    void deleteElement(int value)
-    {
-        for (int i = 0; i < vec.length; i++)
-        {
-              if (vec[i] == value)
-              {
-                  
-              }
+    /** Dołącza określony element na końcu wektora, nawet gdy jest pełny. W takim przypadku rozmiar wektora zostanie zwiększony. */
+    public void addEvenWhenFull(int element, int extendByPercent) {
+        if(currentSize==maxSize) {
+            if(extendByPercent<1 || extendByPercent>100){
+                System.out.println("Procent o ile ma być powiększony maksyamly rozmiar wektora musi znajdować się w przedziale [1, 100]");
+                return;
+            }
+            int extendBy = maxSize*extendByPercent/100;
+            // Zwiększamy przynajmniej o jeden.
+            maxSize += (extendBy==0?1:extendBy); // Math.max(extendBy, 1)
+            int[] vectorTmp = new int[maxSize];
+            System.arraycopy(vector, 0, vectorTmp, 0, vector.length);
+            vector = vectorTmp;
+            vector[currentSize++] = element;
         }
+        else {
+            addIfNotFull(element);
+        }
+    }
+
+
+    //================================== b. Usuwanie z tablicy zadanych elementów
+    /** Usuwa  z wektora pierwsze wystąpienie określonego elementu, jeśli jest obecny. */
+    public void remove(int element){
+        for(int i = 0; i < currentSize; i++) {
+            if(vector[i]==element){
+                System.arraycopy(vector, i+1, vector, i, --currentSize-i);
+                break;
+            }
+        }
+    }
+    /** Usuwa z wektora wszystkie wystąpienia określonego elementu, jeśli jest obecny. */
+    public void removeAll(int element){
+        for(int i = 0; i < currentSize; i++) {
+            if(vector[i]==element){
+                System.arraycopy(vector, i+1, vector, i, --currentSize-i);
+                // Zmniejszamy i, żeby nie pominąć przesuniętego elementu.
+                --i;
+            }
+        }
+    }
+
+    //================================== c. Sprawdzanie porządku w tablicy
+    public boolean ascendingOrder() {
+        for(int i = 0; i < currentSize-1; i++) {
+            if(vector[i]>vector[i+1])
+                return false;
+        }
+        return true;
+    }
+    public boolean descendingOrder() {
+        for(int i = 0; i < currentSize-1; i++) {
+            if(vector[i]<vector[i+1])
+                return false;
+        }
+        return true;
+    }
+    public String order() {
+        if(currentSize>1){
+            boolean asc = ascendingOrder();
+            boolean dsc = descendingOrder();
+            if (asc && dsc) {
+                return "stała";
+            }
+            if (asc) {
+                return "rosnąca";
+            }
+            if (dsc) {
+                return "malejąca";
+            }
+        }
+        return "brak porządku";
     }
 
 }//End of class wektor
@@ -179,12 +219,10 @@ class Main {
             case 4:
                 System.out.print("Podaj nową wartość: ");
                 int value = getInt(sc);
-                wektor.addAtEnd(value, 1);
                 break;
             default:
                 return;
         }
-        wektor.addAtEnd(10, 50);
         wektor.display();
     }
     /** setVectorElements(Scanner sc, Wektor wektor, int[] vec = new int[]{2,-6,2,-1}) */
