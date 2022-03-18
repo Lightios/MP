@@ -170,6 +170,85 @@ class Wektor{
         return "brak porządku";
     }
 
+    public int getMaxElement()
+    {
+        int maximum = vector[0];
+        for (int i = 1; i < currentSize; i++)
+        {
+            if (vector[i] > maximum)
+                maximum = vector[i];
+        }
+        return maximum;
+    }
+
+    public int getMinElement()
+    {
+        int minimum = vector[0];
+        for (int i = 1; i < currentSize; i++)
+        {
+            if (vector[i] < minimum)
+                minimum = vector[i];
+        }
+        return minimum;
+    }
+
+    public int hornersMethod(int x)
+    {
+        int output = 0;
+        for (int i = 0; i < currentSize; i++)
+        {
+            output *= x;
+            output += vector[i];
+        }
+        return output;
+    }
+
+    public void deleteDuplicatesN2()
+    {
+        int[] tempVector = new int[currentSize];
+        boolean alreadyIn = false;
+        int tempSize = 0;
+
+        for (int i = 0; i < currentSize; i++)
+        {
+            alreadyIn = false;
+            for (int j = 0; j < tempSize; j++)
+            {
+                if (tempVector[j] == vector[i])
+                    alreadyIn = true;
+            }
+
+            if (!alreadyIn)
+            {
+                tempVector[tempSize] = vector[i];
+                tempSize += 1;
+            }
+        }
+        vector = tempVector;
+        currentSize = tempSize;
+    }
+
+    public int[] maxSubArray()
+    {
+        // TODO: dokończyć
+        int[] tempSubArray = new int[currentSize];
+        tempSubArray[0] = vector[0];
+        int tempSize = 1;
+
+        for (int i = 0; i < currentSize; i++)
+        {
+            if (vector[i] <= vector[i + 1])
+            {
+                tempSubArray[tempSize] += 1;
+                tempSize += 1;
+            }
+        }
+
+    }
+
+
+
+
 }//End of class wektor
 ////////////////////////////////////////////////////////////
 /**
@@ -196,6 +275,7 @@ class Main {
             currentSizeTmp = getInt(sc);
         }
         wektor.currentSize = currentSizeTmp;
+
         System.out.println("Wybierz: 1-czytanie, 2-losowanie, 3-predefiniowany, inne - koniec");
         int choice = getInt(sc);
 
@@ -220,6 +300,9 @@ class Main {
                 System.out.print("Podaj nową wartość: ");
                 int value = getInt(sc);
                 break;
+            case 5:
+                System.out.println(wektor.getMaxElement());
+                break;
             default:
                 return;
         }
@@ -230,9 +313,16 @@ class Main {
         setVectorElements(sc, wektor, new int[]{2,-6,2,-1});
     }
     public static void main(String[] args) {
-        Wektor testVector = new Wektor(4);
+        Wektor testVector = new Wektor(100);
         //Tworzy jeden obiekt sc.
         Scanner sc = new Scanner(System.in);
-        Main.setVectorElements(sc, testVector);
+
+        Wektor forDuplicates = new Wektor(100);
+        Main.setVectorElements(sc, forDuplicates, new int[]{1, 1, 2, 10, 1, 1, 10, 10, 10, 12, 10, 10, 1});
+
+        forDuplicates.deleteDuplicatesN3();
+        forDuplicates.display();
+
+        //Main.setVectorElements(sc, testVector);
     }
 }//End of class wektorApp
