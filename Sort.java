@@ -177,8 +177,9 @@ class Sort
 
     public int getQuantity(int lookingFor, int arrayIndex)
     {
-        if (binarySearch(lookingFor, arrayIndex) != -1)
-            return lastBinarySearch(lookingFor, arrayIndex) - firstBinarySearch(lookingFor, arrayIndex) + 1;
+        int firstOutput = binarySearch(lookingFor, arrayIndex);
+        if (firstOutput != -1)
+            return lastBinarySearch(lookingFor, arrayIndex) - firstOutput + 1;
         else
             return  -1;
     }
