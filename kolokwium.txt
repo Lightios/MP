@@ -1,0 +1,1 @@
+wyszukiwane binarne, quick sort, złożoność czasowa, sortowanie przez wstawianie
